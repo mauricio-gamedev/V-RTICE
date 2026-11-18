@@ -17,7 +17,7 @@ import kotlin.test.assertTrue
 class JdbcIdentityRepositoryTest {
     @Test
     fun postgresPersistsAccountAndEnforcesRefreshRotationAndRevocation() = runBlocking {
-        val jdbcUrl = System.getenv("TEST_DATABASE_URL") ?: return
+        val jdbcUrl = System.getenv("TEST_DATABASE_URL") ?: return@runBlocking
         val username = System.getenv("TEST_DATABASE_USER") ?: "vertice"
         val password = System.getenv("TEST_DATABASE_PASSWORD") ?: "vertice_ci_password"
         val dataSource = DatabaseFactory.connect(
