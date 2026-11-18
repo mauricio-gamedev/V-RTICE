@@ -34,13 +34,13 @@ Not implemented yet: accounts, persisted profiles, friendships, presence, messag
 
 ## Build
 
-CI uses Gradle 9.6.0, JDK 17, and Android SDK 36.
+CI uses Gradle 9.6.0, JDK 17, and Android SDK 37.
 
     gradle :android:app:assembleDebug
     gradle :backend:app:test
     gradle :backend:app:run
 
-Requirements: JDK 17 or newer, Gradle 9.6.0, and Android SDK 36 for the Android app.
+Requirements: JDK 17 or newer, Gradle 9.6.0, and Android SDK 37 for the Android app.
 
 ## Engineering rules
 
