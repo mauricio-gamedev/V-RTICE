@@ -1,7 +1,6 @@
 package com.vertice.backend.identity
 
 import de.mkammerer.argon2.Argon2Factory
-import de.mkammerer.argon2.Argon2Types
 
 interface PasswordHasher {
     fun hash(password: CharArray): String
@@ -10,7 +9,7 @@ interface PasswordHasher {
 
 class Argon2idPasswordHasher : PasswordHasher {
     override fun hash(password: CharArray): String =
-        Argon2Factory.create(Argon2Types.ARGON2id).hash(
+        Argon2Factory.create(Argon2Factory.Argon2Types.ARGON2id).hash(
             3,
             65_536,
             1,
