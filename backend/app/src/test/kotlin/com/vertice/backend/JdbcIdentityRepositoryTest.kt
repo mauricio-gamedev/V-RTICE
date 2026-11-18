@@ -4,6 +4,7 @@ import com.vertice.backend.database.DatabaseFactory
 import com.vertice.backend.database.JdbcIdentityRepository
 import com.vertice.backend.identity.SessionRecord
 import com.vertice.backend.identity.UserRecord
+import kotlinx.coroutines.runBlocking
 import java.sql.Timestamp
 import java.time.Instant
 import java.util.UUID
@@ -15,7 +16,7 @@ import kotlin.test.assertTrue
 
 class JdbcIdentityRepositoryTest {
     @Test
-    fun postgresPersistsAccountAndEnforcesRefreshRotationAndRevocation() {
+    fun postgresPersistsAccountAndEnforcesRefreshRotationAndRevocation() = runBlocking {
         val jdbcUrl = System.getenv("TEST_DATABASE_URL") ?: return
         val username = System.getenv("TEST_DATABASE_USER") ?: "vertice"
         val password = System.getenv("TEST_DATABASE_PASSWORD") ?: "vertice_ci_password"
