@@ -22,6 +22,24 @@ jobs:
     name: Android build + backend tests
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: vertice_ci
+          POSTGRES_USER: vertice
+          POSTGRES_PASSWORD: vertice_ci_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U vertice -d vertice_ci"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 20
+    env:
+      TEST_DATABASE_URL: jdbc:postgresql://localhost:5432/vertice_ci
+      TEST_DATABASE_USER: vertice
+      TEST_DATABASE_PASSWORD: vertice_ci_password
 
     steps:
       - name: Checkout
