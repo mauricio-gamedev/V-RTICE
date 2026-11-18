@@ -11,7 +11,7 @@
 - Foundation branch: feat/foundation-scaffold (foundation APK manually tested by the project owner)
 - Backend identity branch: feat/identity-auth, PR #2 (draft, unmerged)
 - Android identity branch: feat/android-auth-ui, PR #3 (draft, stacked on feat/identity-auth, unmerged)
-- Current staging branch: feat/staging-deployment (based on feat/android-auth-ui; PR #4 is not opened yet)
+- Current staging branch: feat/staging-deployment (based on feat/android-auth-ui; PR #4 open as a draft targeting feat/android-auth-ui)
 
 ## Validation evidence from upstream branches
 
@@ -51,7 +51,7 @@
 ## Next tasks
 
 1. Validate current branch CI, including backend tests, Android APK build, and Docker image build. Fix all failures.
-2. Open PR #4 from feat/staging-deployment to feat/android-auth-ui after checks pass.
+2. Keep PR #4 in draft until CI is green and the deployment diff is reviewed.
 3. Configure Neon and Render resources with secrets entered privately in their dashboards.
 4. Use the exact generated Render HTTPS hostname in Android and test /health/live, signup, login, refresh, profile, and logout on the Galaxy A06.
 5. After identity is verified, implement friend requests and Pulse presence, followed by direct messages and Círculos.
