@@ -3,7 +3,7 @@ package io.github.mauriciogamedev.vertice.auth
 import android.content.Context
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
-import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.bearerAuth
@@ -21,7 +21,7 @@ class VerticeAuthRepository(context: Context) {
     private val endpointStore = ApiEndpointStore(context)
     private val tokenStore = SecureTokenStore(context)
 
-    private val client = HttpClient(OkHttp) {
+    private val client = HttpClient(CIO) {
         expectSuccess = false
         install(ContentNegotiation) {
             json(
