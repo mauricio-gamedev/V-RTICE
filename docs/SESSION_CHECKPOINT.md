@@ -1,65 +1,75 @@
 # Session checkpoint
 
 **Updated:** 2026-11-18  
-**Branch:** feat/identity-auth  
-**Milestone:** Identity and authentication — first implementation
+**Branch:** feat/android-auth-ui  
+**Milestone:** Android identity and authenticated app entry
 
 ## Repository state
 
 - Repository: mauricio-gamedev/V-RTICE
 - Default branch: main
-- Foundation branch: feat/foundation-scaffold
-- Current implementation branch: feat/identity-auth (based on feat/foundation-scaffold)
-- The foundation APK was downloaded and manually tested by the project owner.
-- The foundation PR remains separate; do not merge or rewrite its history from this feature branch.
+- Foundation branch: feat/foundation-scaffold (foundation APK downloaded and manually tested by the project owner)
+- Backend identity branch: feat/identity-auth, PR #2 (draft)
+- Current Android integration branch: feat/android-auth-ui, PR #3 (draft, stacked on feat/identity-auth)
 
-## Implemented on feat/identity-auth
+## Implemented in this branch
 
-- Identity domain records and repository contract.
-- Argon2id password hashing service (64 MiB memory, 3 iterations, 1 lane).
-- HS256 JWT access tokens with 15-minute expiry.
-- Opaque 256-bit refresh tokens, SHA-256 token digests, 30-day rolling session expiry, and atomic refresh rotation.
-- PostgreSQL JDBC repository backed by HikariCP.
-- Flyway migration for users and auth_sessions tables.
-- Ktor routes: register, login, refresh, logout, and current profile.
-- Server-side session validation on protected requests.
-- Unit/API tests using a fake identity repository and a PostgreSQL integration test activated by TEST_DATABASE_URL.
-- Dockerfile and docker-compose setup for a local PostgreSQL + API environment.
-- Identity API documentation and ADR-0002.
+- Ktor Android client for identity endpoints.
+- HTTPS-only configurable API base URL, saved as a non-secret app preference.
+- API liveness check before login or registration.
+- Login and registration screen in Portuguese.
+- Auth response/user DTOs aligned with backend contracts.
+- Refresh token encrypted using Android Keystore AES-256-GCM; ciphertext and IV stored in private SharedPreferences.
+- Access JWT held only in runtime memory, not persisted to disk.
+- Session restore by rotating the saved refresh token at app launch.
+- Profile screen populated from the authenticated API response.
+- Logout calls the backend and revokes the session.
+- Transient network failures do not erase the encrypted refresh token; an invalid/revoked refresh token clears it.
+
+## Backend identity dependency
+
+The upstream feat/identity-auth branch provides:
+- PostgreSQL users and auth_sessions tables through Flyway.
+- Argon2id password hashing.
+- Short-lived HS256 access JWTs.
+- Opaque refresh tokens with SHA-256 digests and atomic rotation.
+- Ktor registration, login, refresh, logout, and /v1/me routes.
+- API tests and a PostgreSQL integration test in CI.
 
 ## Not implemented yet
 
-- Android sign-up/login/profile screens connected to this backend.
-- A hosted backend URL, TLS, deployment secrets, and production database.
-- Email verification, password reset, account recovery, and authentication rate limiting.
-- Friendships, presence, direct/group messaging, Círculos, permissions, and moderation.
-- WebSocket event model and delivery guarantees.
-- LiveKit integration, voice calls, Clearvoice, Spectra, and screen capture.
-- Final brand availability and final package identifier validation.
+- Hosted HTTPS API or production database.
+- Email verification, password reset, account recovery, authentication rate limits, abuse monitoring, and deployment monitoring.
+- Friendship requests, presence, direct/group messaging, Círculos, channels, permissions, moderation, and notification delivery.
+- WebSocket events and LiveKit media integration.
+- Voice rooms, Clearvoice processing, Spectra screen sharing, or camera video.
+- Final product brand availability validation.
 
-## Security and deployment constraints
+## Configuration and security
 
-- Do not expose signup publicly until HTTPS, email verification, abuse/rate limits, and operational monitoring are enabled.
-- JWT_SECRET must be unique per environment and at least 32 UTF-8 bytes.
-- Never place JWT_SECRET, database credentials, or other backend secrets in the Android client or APK.
-- Refresh tokens are single-use and are invalidated when rotated or when the server-side session is revoked.
+- The app intentionally does not contain a hard-coded API hostname.
+- Configure a real HTTPS base URL in the login screen. The UI refuses HTTP URLs.
+- Do not use a production endpoint until HTTPS, email verification, abuse controls, and account recovery are deployed.
+- Database credentials and JWT signing secret remain on the backend and must never be included in the APK.
+- Access JWTs are only in memory; refresh tokens are encrypted at rest with an Android Keystore key.
+- If the device cannot decrypt the saved refresh token, the local session is cleared and the user must sign in again.
 
 ## Validation status
 
-- Foundation APK was manually tested by the project owner.
-- Identity branch CI has been configured to compile the Android app, run backend/API tests, and run a PostgreSQL-backed integration test against a PostgreSQL service.
-- The identity branch CI result has not yet been confirmed.
-- No production deployment has been created.
-- Do not describe identity features as production-ready until CI, API deployment, TLS, and device integration tests pass.
+- Foundation APK was manually installed and tested by the project owner.
+- Earlier identity CI runs exposed compile errors in Ktor StatusPages imports, Argon2Factory enum references, and Ktor client contentType imports. These were corrected on both feature branches.
+- CI for latest identity branch commit and latest Android UI commit is currently running; do not mark them successful until the current runs finish.
+- No APK from the new authentication UI branch has yet been verified by a completed successful CI run.
+- No API deployment exists, so end-to-end account creation against a remote server has not been tested on the physical device.
 
 ## Next task
 
-1. Inspect and fix the first identity-branch CI run.
-2. Add Android registration/login screens and repository/ViewModel.
-3. Define a secure API base URL per build variant; do not invent a production hostname.
-4. Deploy the API/database to a chosen host with HTTPS and secrets kept server-side.
-5. Run registration/login/profile/refresh/logout end-to-end from the physical Android app.
-6. Implement friend requests and presence on top of the now-defined account identity.
+1. Inspect the latest CI runs for feat/identity-auth and feat/android-auth-ui; fix any remaining compile/test issues.
+2. Keep PR #2 based on feat/foundation-scaffold and PR #3 based on feat/identity-auth; merge in that dependency order after successful checks.
+3. Select and configure a backend hosting target with HTTPS and managed secrets; do not invent a hostname.
+4. Test signup/login/refresh/profile/logout on the Galaxy A06 against the deployed API.
+5. Implement friend requests and the Pulse presence model next.
+6. Continue with direct messaging and Círculos after the social identity layer is verified.
 
 ## Working rule
 

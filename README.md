@@ -30,7 +30,7 @@ Foundation scaffold:
 - Pinned Gradle version catalog and GitHub Actions workflow.
 - Product, architecture, testing, security, and contribution documentation.
 
-Foundation baseline is built and was manually tested on a physical Android device. The identity/auth branch now adds PostgreSQL-backed registration, login, rotating refresh tokens, logout, and /v1/me API contracts; the branch is under CI validation and the Android UI is not yet wired to a deployed API. Friendships, presence, messaging, Círculos, voice calls, and screen sharing remain future implementation slices.
+Foundation baseline is built and was manually tested on a physical Android device. The identity/auth branch adds PostgreSQL-backed registration, login, rotating refresh tokens, logout, and /v1/me. The Android auth branch adds the login/registration UI, HTTPS endpoint configuration, encrypted refresh-token storage, session restoration, and a profile screen. Both feature branches remain under CI validation, and no hosted HTTPS API is configured yet, so end-to-end remote account creation is not available. Friendships, presence, messaging, Círculos, voice calls, and screen sharing remain future implementation slices.
 
 ## Run API + PostgreSQL locally
 
