@@ -45,15 +45,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.vertice.backend.identity.UserProfile
-import com.vertice.backend.identity.AuthResponse
-import com.vertice.android.unused
-import com.vertice
 import kotlinx.coroutines.launch
-import com.vertice
-import androidx.compose.material3.TextButton
-import com.vertice
-import com.vertice
 import io.github.mauriciogamedev.vertice.auth.AuthLoadingScreen
 import io.github.mauriciogamedev.vertice.auth.AuthScreen
 import io.github.mauriciogamedev.vertice.auth.AuthSession
