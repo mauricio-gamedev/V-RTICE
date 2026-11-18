@@ -17,9 +17,10 @@ class IdentityService(
         try {
             passwordHasher.hash(dummyPassword)
         } finally {
-            dummyPassword.fill('\\u0000')
+            dummyPassword.fill('\u0000')
         }
     }
+
     suspend fun register(request: RegisterRequest): AuthResponse {
         val email = normalizeEmail(request.email)
         val username = normalizeUsername(request.username)
@@ -62,21 +63,25 @@ class IdentityService(
 
     suspend fun login(request: LoginRequest): AuthResponse {
         val identifier = request.identifier.trim().lowercase()
-        if (identifier.isBlank() || request.password.isEmpty() || request.password.length > 128) {
+        if (identifier.isBlank() || identifier.length > 254 ||
+            request.password.isEmpty() || request.password.length > 128
+        ) {
             throw InvalidCredentialsException()
         }
 
         val user = repository.findUserByLogin(identifier)
-            ?: throw InvalidCredentialsException()
+        val hashToVerify = user?.passwordHash ?: withContext(Dispatchers.Default) {
+            dummyPasswordHash
+        }
         val password = request.password.toCharArray()
         val valid = try {
             withContext(Dispatchers.Default) {
-                passwordHasher.verify(user.passwordHash, password)
+                passwordHasher.verify(hashToVerify, password)
             }
         } finally {
             password.fill('\u0000')
         }
-        if (!valid) throw InvalidCredentialsException()
+        if (user == null || !valid) throw InvalidCredentialsException()
 
         val now = clock.instant()
         val sessionId = UUID.randomUUID()
