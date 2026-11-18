@@ -12,6 +12,14 @@ class IdentityService(
     private val tokenService: TokenService,
     private val clock: Clock = Clock.systemUTC(),
 ) {
+    private val dummyPasswordHash: String by lazy {
+        val dummyPassword = "vertice-unknown-account-timing-pad".toCharArray()
+        try {
+            passwordHasher.hash(dummyPassword)
+        } finally {
+            dummyPassword.fill('\\u0000')
+        }
+    }
     suspend fun register(request: RegisterRequest): AuthResponse {
         val email = normalizeEmail(request.email)
         val username = normalizeUsername(request.username)
