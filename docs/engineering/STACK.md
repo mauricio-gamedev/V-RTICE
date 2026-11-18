@@ -10,7 +10,7 @@ Versions are deliberately pinned instead of using dynamic dependency selectors. 
 | Jetpack Compose BOM | 2026.09.00 | Stable Compose library alignment |
 | Ktor | 3.6.1 | Current Ktor 3.x patch release |
 | JDK | 17 | Android build toolchain baseline |
-| Android compile/target SDK | 36 | Android 16; current Google Play target requirement |
+| Android compile SDK | 37 | Required by Compose 1.12; supported by AGP 9.5 |\n| Android target SDK | 36 | Keep runtime behavior unchanged until target API migration is planned |
 | Android min SDK | 26 | Initial compatibility floor; validate against feature needs |
 | App UI | Jetpack Compose + Material 3 | Native Android UI |
 | Backend | Kotlin + Ktor / Netty | Typed, coroutine-oriented service |
