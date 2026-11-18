@@ -19,3 +19,11 @@ Do not publish credentials, tokens, personal data, or a reproducible exploit in 
 - Account deletion, retention, and age policies must be defined before public beta.
 
 Do not assume end-to-end encryption exists. It has not been implemented or independently reviewed.
+
+## Current identity implementation status
+
+- Password hashing uses Argon2id.
+- Access JWTs expire after 15 minutes and are signed with a server-only environment secret.
+- Refresh tokens are opaque, stored as SHA-256 hashes, and rotated on use.
+- Session state is persisted in PostgreSQL and checked for every authenticated API request.
+- Email verification, password reset, signup/login rate limits, abuse monitoring, and account recovery are not implemented yet. Public signup must remain closed or restricted until these controls and HTTPS are deployed.
