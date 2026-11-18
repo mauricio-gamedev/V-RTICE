@@ -30,7 +30,7 @@ import io.ktor.server.auth.principal
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.ContentTransformationException
-import io.ktor.server.plugins.StatusPages
+import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
@@ -126,7 +126,7 @@ fun Application.module(dependencies: AppDependencies) {
             )
         }
         exception<Throwable> { call, cause ->
-            log.error("Unhandled request error", cause)
+            cause.printStackTrace()
             call.respond(
                 HttpStatusCode.InternalServerError,
                 ApiError("internal_error", "Ocorreu um erro interno."),
