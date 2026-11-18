@@ -69,4 +69,5 @@ data class ApiError(
 class DuplicateAccountException : RuntimeException()
 class InvalidRequestException(message: String) : RuntimeException(message)
 class InvalidCredentialsException : RuntimeException()
+class InvalidInvitationCodeException : RuntimeException()
 class InvalidSessionException : RuntimeException()
