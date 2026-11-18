@@ -1,53 +1,65 @@
 # Session checkpoint
 
 **Updated:** 2026-11-18  
-**Branch:** feat/foundation-scaffold  
-**Milestone:** Foundation scaffold
+**Branch:** feat/identity-auth  
+**Milestone:** Identity and authentication — first implementation
 
 ## Repository state
 
 - Repository: mauricio-gamedev/V-RTICE
 - Default branch: main
-- Repository was empty when received.
-- One bootstrap README commit was required on main to create the initial Git object/ref.
-- Feature development is isolated on feat/foundation-scaffold.
+- Foundation branch: feat/foundation-scaffold
+- Current implementation branch: feat/identity-auth (based on feat/foundation-scaffold)
+- The foundation APK was downloaded and manually tested by the project owner.
+- The foundation PR remains separate; do not merge or rewrite its history from this feature branch.
 
-## Implemented in this branch
+## Implemented on feat/identity-auth
 
-- Product, architecture, stack, and test strategy documentation.
-- Repository instructions and contribution/security guidance.
-- Gradle multi-project settings and pinned version catalog.
-- Android application module using Kotlin and Jetpack Compose.
-- Initial four-destination app shell with explicit empty states.
-- Ktor backend module with a liveness endpoint and an automated route test.
-- GitHub Actions workflow for Android assembly, backend tests, and APK artifact upload.
+- Identity domain records and repository contract.
+- Argon2id password hashing service (64 MiB memory, 3 iterations, 1 lane).
+- HS256 JWT access tokens with 15-minute expiry.
+- Opaque 256-bit refresh tokens, SHA-256 token digests, 30-day rolling session expiry, and atomic refresh rotation.
+- PostgreSQL JDBC repository backed by HikariCP.
+- Flyway migration for users and auth_sessions tables.
+- Ktor routes: register, login, refresh, logout, and current profile.
+- Server-side session validation on protected requests.
+- Unit/API tests using a fake identity repository and a PostgreSQL integration test activated by TEST_DATABASE_URL.
+- Dockerfile and docker-compose setup for a local PostgreSQL + API environment.
+- Identity API documentation and ADR-0002.
 
 ## Not implemented yet
 
-- Authentication, account/session storage, and profile persistence.
-- PostgreSQL schema/migrations and Redis integration.
-- Friends, presence, conversations, messages, Círculos, permissions, and moderation.
+- Android sign-up/login/profile screens connected to this backend.
+- A hosted backend URL, TLS, deployment secrets, and production database.
+- Email verification, password reset, account recovery, and authentication rate limiting.
+- Friendships, presence, direct/group messaging, Círculos, permissions, and moderation.
 - WebSocket event model and delivery guarantees.
-- LiveKit integration, voice calls, Clearvoice, and Spectra.
-- Screen capture and other-app playback audio capture.
-- Production deployment, secrets management, and signing pipeline.
+- LiveKit integration, voice calls, Clearvoice, Spectra, and screen capture.
 - Final brand availability and final package identifier validation.
+
+## Security and deployment constraints
+
+- Do not expose signup publicly until HTTPS, email verification, abuse/rate limits, and operational monitoring are enabled.
+- JWT_SECRET must be unique per environment and at least 32 UTF-8 bytes.
+- Never place JWT_SECRET, database credentials, or other backend secrets in the Android client or APK.
+- Refresh tokens are single-use and are invalidated when rotated or when the server-side session is revoked.
 
 ## Validation status
 
-- Source files were committed to the feature branch.
-- CI initially failed at Android SDK setup because the action attempted to install the obsolete `tools` package; the workflow now installs `platform-tools` explicitly.\n- After that correction, CI reached Gradle and exposed the AGP 9 built-in Kotlin migration; the legacy Kotlin Android plugin was removed.\n- Compose 1.12.1 required compileSdk 37, which is currently distributed as the Android 17 preview platform under a versioned package name rather than the stable `android-37` package. To keep foundation CI on a stable SDK, the Compose BOM is pinned to stable `2026.06.01` (Compose Runtime 1.11.4) and compileSdk/targetSdk remain 36.\n- A successful CI run for this updated dependency baseline has not yet been observed.
-- No local Android SDK/Gradle installation was available in the authoring environment.
-- Do not describe the Android build or backend test as passing until CI provides a successful run.
-- The Compose screen is a navigable foundation shell, not a connected production client.
+- Foundation APK was manually tested by the project owner.
+- Identity branch CI has been configured to compile the Android app, run backend/API tests, and run a PostgreSQL-backed integration test against a PostgreSQL service.
+- The identity branch CI result has not yet been confirmed.
+- No production deployment has been created.
+- Do not describe identity features as production-ready until CI, API deployment, TLS, and device integration tests pass.
 
 ## Next task
 
-1. Inspect GitHub Actions run for this branch and fix any build/test failures.
-2. Add API configuration and a server-side health contract.
-3. Add the first PostgreSQL migration and repository integration tests.
-4. Design the identity/session domain and security flows before implementing authentication.
-5. Implement the first vertical slice: account, profile, friend request, and direct message.
+1. Inspect and fix the first identity-branch CI run.
+2. Add Android registration/login screens and repository/ViewModel.
+3. Define a secure API base URL per build variant; do not invent a production hostname.
+4. Deploy the API/database to a chosen host with HTTPS and secrets kept server-side.
+5. Run registration/login/profile/refresh/logout end-to-end from the physical Android app.
+6. Implement friend requests and presence on top of the now-defined account identity.
 
 ## Working rule
 

@@ -7,6 +7,12 @@
 - Contract tests for event payload versioning and idempotency.
 - Negative tests for unauthorized access and invalid input.
 
+## Identity and PostgreSQL integration
+
+- API tests exercise registration, login, refresh rotation, replay rejection, profile access, and logout revocation using an in-memory fake repository.
+- A database integration test runs when TEST_DATABASE_URL is set. CI supplies a disposable PostgreSQL service so the Flyway migration and JDBC repository are exercised against a real database.
+- Never use the fake password hasher outside tests.
+
 ## Android
 
 - Unit tests for ViewModels, reducers, validation, and repositories.
