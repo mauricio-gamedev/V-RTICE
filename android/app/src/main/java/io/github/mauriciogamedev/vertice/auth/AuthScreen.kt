@@ -58,6 +58,7 @@ fun AuthScreen(
     var email by rememberSaveable { mutableStateOf("") }
     var username by rememberSaveable { mutableStateOf("") }
     var displayName by rememberSaveable { mutableStateOf("") }
+    var invitationCode by remember { mutableStateOf("") }
     var identifier by rememberSaveable { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var isBusy by rememberSaveable { mutableStateOf(false) }
@@ -256,6 +257,14 @@ fun AuthScreen(
                 singleLine = true,
                 label = { Text("E-mail") },
             )
+            OutlinedTextField(
+                value = invitationCode,
+                onValueChange = { invitationCode = it },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true,
+                label = { Text("Código de convite") },
+                supportingText = { Text("Acesso restrito ao ambiente de testes do VÉRTICE.") },
+            )
         } else {
             OutlinedTextField(
                 value = identifier,
@@ -297,7 +306,7 @@ fun AuthScreen(
                             serverMessage = "Servidor conectado."
                         }
                         val session = if (isRegister) {
-                            repository.register(email, username, displayName, password)
+                            repository.register(email, username, displayName, password, invitationCode)
                         } else {
                             repository.login(identifier, password)
                         }
@@ -312,7 +321,7 @@ fun AuthScreen(
             enabled = !isBusy && serverUrl.isNotBlank() &&
                 password.isNotBlank() &&
                 (if (isRegister) {
-                    email.isNotBlank() && username.isNotBlank() && displayName.isNotBlank()
+                    email.isNotBlank() && username.isNotBlank() && displayName.isNotBlank() && invitationCode.isNotBlank()
                 } else {
                     identifier.isNotBlank()
                 }),
