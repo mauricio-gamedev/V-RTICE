@@ -4,6 +4,7 @@ data class AppConfig(
     val databaseUrl: String,
     val databaseUser: String,
     val databasePassword: String,
+    val registrationInviteCode: String,
     val jwtSecret: String,
     val jwtIssuer: String,
     val jwtAudience: String,
@@ -16,6 +17,11 @@ data class AppConfig(
             fun required(name: String): String =
                 environment[name]?.takeIf { it.isNotBlank() }
                     ?: error("Missing required environment variable: $name")
+
+            val registrationInviteCode = required("REGISTRATION_INVITE_CODE")
+            require(registrationInviteCode.length in 12..128) {
+                "REGISTRATION_INVITE_CODE must contain between 12 and 128 characters."
+            }
 
             val jwtSecret = required("JWT_SECRET")
             require(jwtSecret.toByteArray(Charsets.UTF_8).size >= 32) {
@@ -32,6 +38,7 @@ data class AppConfig(
                 databaseUrl = required("DATABASE_URL"),
                 databaseUser = required("DATABASE_USER"),
                 databasePassword = required("DATABASE_PASSWORD"),
+                registrationInviteCode = registrationInviteCode,
                 jwtSecret = jwtSecret,
                 jwtIssuer = environment["JWT_ISSUER"]?.ifBlank { null } ?: "vertice-api",
                 jwtAudience = environment["JWT_AUDIENCE"]?.ifBlank { null } ?: "vertice-android",

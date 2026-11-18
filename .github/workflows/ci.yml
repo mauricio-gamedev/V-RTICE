@@ -71,6 +71,9 @@ jobs:
             :android:app:assembleDebug \
             :backend:app:test
 
+      - name: Build staging Docker image
+        run: docker build --pull -f backend/Dockerfile -t vertice-api:ci .
+
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:

@@ -27,6 +27,7 @@ data class RegisterRequest(
     val email: String,
     val username: String,
     val displayName: String,
+    val invitationCode: String,
     val password: String,
 )
 
@@ -68,4 +69,5 @@ data class ApiError(
 class DuplicateAccountException : RuntimeException()
 class InvalidRequestException(message: String) : RuntimeException(message)
 class InvalidCredentialsException : RuntimeException()
+class InvalidInvitationCodeException : RuntimeException()
 class InvalidSessionException : RuntimeException()

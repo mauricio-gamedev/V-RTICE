@@ -7,6 +7,7 @@ data class RegisterRequestDto(
     val email: String,
     val username: String,
     val displayName: String,
+    val invitationCode: String,
     val password: String,
 )
 

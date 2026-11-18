@@ -35,7 +35,7 @@ class ApplicationTest {
         val registration = client.post("/v1/auth/register") {
             contentType(ContentType.Application.Json)
             setBody(
-                """{"email":"Friend@Example.com","username":"Friend_01","displayName":"Friend One","password":"strong-password-01"}""",
+                """{"email":"Friend@Example.com","username":"Friend_01","displayName":"Friend One","invitationCode":"test-only-invite-code","password":"strong-password-01"}""",
             )
         }
 
@@ -85,7 +85,7 @@ class ApplicationTest {
         client.post("/v1/auth/register") {
             contentType(ContentType.Application.Json)
             setBody(
-                """{"email":"login@example.com","username":"login_user","displayName":"Login User","password":"correct-password"}""",
+                """{"email":"login@example.com","username":"login_user","displayName":"Login User","invitationCode":"test-only-invite-code","password":"correct-password"}""",
             )
         }
 
@@ -103,18 +103,32 @@ class ApplicationTest {
     }
 
     @Test
+    fun registrationRejectsWrongInvitationCode() = testApplication {
+        application { module(testDependencies()) }
+
+        val rejected = client.post("/v1/auth/register") {
+            contentType(ContentType.Application.Json)
+            setBody(
+                """{"email":"blocked@example.com","username":"blocked_user","displayName":"Blocked User","invitationCode":"wrong-test-invite-code","password":"valid-test-password"}""",
+            )
+        }
+
+        assertEquals(HttpStatusCode.Forbidden, rejected.status)
+    }
+
+    @Test
     fun registrationRejectsInvalidInputAndDuplicateIdentity() = testApplication {
         application { module(testDependencies()) }
 
         val invalid = client.post("/v1/auth/register") {
             contentType(ContentType.Application.Json)
             setBody(
-                """{"email":"not-an-email","username":"x","displayName":"A","password":"short"}""",
+                """{"email":"not-an-email","username":"x","displayName":"A","invitationCode":"test-only-invite-code","password":"short"}""",
             )
         }
         assertEquals(HttpStatusCode.BadRequest, invalid.status)
 
-        val request = """{"email":"same@example.com","username":"same_user","displayName":"Same User","password":"strong-password"}"""
+        val request = """{"email":"same@example.com","username":"same_user","displayName":"Same User","invitationCode":"test-only-invite-code","password":"strong-password"}"""
         val first = client.post("/v1/auth/register") {
             contentType(ContentType.Application.Json)
             setBody(request)
@@ -137,6 +151,7 @@ private fun testDependencies(): AppDependencies = AppDependencies(
         issuer = "vertice-test",
         audience = "vertice-test-client",
     ),
+    registrationInviteCode = "test-only-invite-code",
 )
 
 private class TestPasswordHasher : PasswordHasher {

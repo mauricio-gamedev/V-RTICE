@@ -9,6 +9,7 @@ import com.vertice.backend.identity.DuplicateAccountException
 import com.vertice.backend.identity.IdentityRepository
 import com.vertice.backend.identity.IdentityService
 import com.vertice.backend.identity.InvalidCredentialsException
+import com.vertice.backend.identity.InvalidInvitationCodeException
 import com.vertice.backend.identity.InvalidRequestException
 import com.vertice.backend.identity.InvalidSessionException
 import com.vertice.backend.identity.LoginRequest
@@ -39,12 +40,15 @@ import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
 import kotlinx.serialization.json.Json
+import java.nio.charset.StandardCharsets.UTF_8
+import java.security.MessageDigest
 import java.util.UUID
 
 data class AppDependencies(
     val identityRepository: IdentityRepository,
     val passwordHasher: PasswordHasher,
     val tokenService: TokenService,
+    val registrationInviteCode: String,
 )
 
 fun main() {
@@ -72,6 +76,7 @@ fun main() {
                 identityRepository = repository,
                 passwordHasher = Argon2idPasswordHasher(),
                 tokenService = tokenService,
+                registrationInviteCode = config.registrationInviteCode,
             ),
         )
     }.start(wait = true)
@@ -111,6 +116,12 @@ fun Application.module(dependencies: AppDependencies) {
             call.respond(
                 HttpStatusCode.Unauthorized,
                 ApiError("invalid_credentials", "E-mail/nome de usuário ou senha inválidos."),
+            )
+        }
+        exception<InvalidInvitationCodeException> { call, _ ->
+            call.respond(
+                HttpStatusCode.Forbidden,
+                ApiError("invite_required", "O código de convite não é válido para este ambiente."),
             )
         }
         exception<InvalidSessionException> { call, _ ->
@@ -167,6 +178,9 @@ fun Application.module(dependencies: AppDependencies) {
 
         post("/v1/auth/register") {
             val request = call.receive<RegisterRequest>()
+            if (!isValidInvitationCode(request.invitationCode, dependencies.registrationInviteCode)) {
+                throw InvalidInvitationCodeException()
+            }
             call.respond(HttpStatusCode.Created, identityService.register(request))
         }
 
@@ -201,6 +215,14 @@ fun Application.module(dependencies: AppDependencies) {
             }
         }
     }
+}
+
+private fun isValidInvitationCode(candidate: String, expected: String): Boolean {
+    if (candidate.length !in 12..128) return false
+    return MessageDigest.isEqual(
+        candidate.toByteArray(UTF_8),
+        expected.toByteArray(UTF_8),
+    )
 }
 
 private fun String?.toUuidOrNull(): UUID? =

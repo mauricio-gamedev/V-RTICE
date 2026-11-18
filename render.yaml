@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: vertice-api-staging
+    runtime: docker
+    plan: free
+    region: virginia
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health/live
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_USER
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: REGISTRATION_INVITE_CODE
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_ISSUER
+        value: vertice-api
+      - key: JWT_AUDIENCE
+        value: vertice-android
+      - key: DATABASE_POOL_SIZE
+        value: "2"
