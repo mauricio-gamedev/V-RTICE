@@ -28,6 +28,19 @@ The SFU handles real-time media transport. It does not own VÉRTICE social data.
 
     LiveKit SFU: real-time audio/video transport
 
+## Identity and sessions
+
+- User accounts and authentication sessions are durable PostgreSQL records.
+- Flyway applies SQL migrations during backend startup.
+- Passwords are stored only as Argon2id hashes.
+- Access tokens are short-lived HS256 JWTs with user and session identifiers.
+- Refresh tokens are random opaque values; only SHA-256 digests are persisted.
+- Refresh is an atomic compare-and-update operation to prevent token replay.
+- Each protected request checks that the corresponding database session is still active.
+- The client never receives the JWT signing secret or database credentials.
+
+See [docs/API.md](API.md) for request and response contracts.
+
 ## Current repository modules
 
 - android/app: first Compose shell and navigation.
