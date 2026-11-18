@@ -163,7 +163,7 @@ fun AuthScreen(
                     singleLine = true,
                     label = { Text("https://api.seudominio.com") },
                     supportingText = {
-                        Text("Use o endereço HTTPS da API. Ainda não existe servidor público configurado.")
+                        Text("Use o endereço HTTPS da API fornecido para este ambiente.")
                     },
                 )
                 Row(
