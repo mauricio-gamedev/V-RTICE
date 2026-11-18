@@ -50,4 +50,4 @@ data class AuthSession(
     val user: AuthUserDto,
 )
 
-class VerticeApiException(message: String) : Exception(message)
+class VerticeApiException(message: String, val statusCode: Int? = null) : Exception(message)
