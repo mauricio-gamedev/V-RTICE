@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "io.github.mauriciogamedev.vertice"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "io.github.mauriciogamedev.vertice"
