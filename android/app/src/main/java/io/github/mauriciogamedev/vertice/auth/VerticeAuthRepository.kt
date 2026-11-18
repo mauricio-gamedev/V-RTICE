@@ -56,6 +56,7 @@ class VerticeAuthRepository(context: Context) {
         username: String,
         displayName: String,
         password: String,
+        invitationCode: String,
     ): AuthSession {
         val response = client.post(endpoint("/v1/auth/register")) {
             contentType(ContentType.Application.Json)
@@ -64,6 +65,7 @@ class VerticeAuthRepository(context: Context) {
                     email = email,
                     username = username,
                     displayName = displayName,
+                    invitationCode = invitationCode,
                     password = password,
                 ),
             )
