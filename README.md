@@ -30,7 +30,15 @@ Foundation scaffold:
 - Pinned Gradle version catalog and GitHub Actions workflow.
 - Product, architecture, testing, security, and contribution documentation.
 
-Not implemented yet: accounts, persisted profiles, friendships, presence, messages, Círculos, database integration, voice calls, or screen sharing. The current app is not a connected chat client.
+Foundation baseline is built and was manually tested on a physical Android device. The identity/auth branch now adds PostgreSQL-backed registration, login, rotating refresh tokens, logout, and /v1/me API contracts; the branch is under CI validation and the Android UI is not yet wired to a deployed API. Friendships, presence, messaging, Círculos, voice calls, and screen sharing remain future implementation slices.
+
+## Run API + PostgreSQL locally
+
+Copy `.env.example` to `.env`, change both passwords/secrets, then run:
+
+    docker compose up --build
+
+The API listens on `http://localhost:8080`. Its first startup runs Flyway migrations. See [Identity API](docs/API.md) for the current account endpoints. Do not expose this development setup to the public internet; HTTPS, verified email, rate limiting, and production secrets management are still pending.
 
 ## Build
 
@@ -40,7 +48,7 @@ CI uses Gradle 9.6.0, JDK 17, and Android SDK 36.
     gradle :backend:app:test
     gradle :backend:app:run
 
-Requirements: JDK 17 or newer, Gradle 9.6.0, and Android SDK 37 for the Android app.
+Requirements: JDK 17 or newer, Gradle 9.6.0, and Android SDK 36 for the Android app.
 
 ## Engineering rules
 
