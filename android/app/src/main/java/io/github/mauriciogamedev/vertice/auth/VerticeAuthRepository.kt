@@ -89,8 +89,17 @@ class VerticeAuthRepository(context: Context) {
     }
 
     suspend fun logout(session: AuthSession) {
+        val accessToken = tokenStore.readRefreshToken()?.let { storedRefresh ->
+            try {
+                refresh(storedRefresh).accessToken
+            } catch (failure: Exception) {
+                tokenStore.clear()
+                throw failure
+            }
+        } ?: session.accessToken
+
         val response = client.post(endpoint("/v1/auth/logout")) {
-            bearerAuth(session.accessToken)
+            bearerAuth(accessToken)
         }
         if (!response.status.isSuccess()) {
             throw response.toApiException()
