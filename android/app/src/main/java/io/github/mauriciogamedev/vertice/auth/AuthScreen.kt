@@ -12,12 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -61,7 +59,7 @@ fun AuthScreen(
     var username by rememberSaveable { mutableStateOf("") }
     var displayName by rememberSaveable { mutableStateOf("") }
     var identifier by rememberSaveable { mutableStateOf("") }
-    var password by rememberSaveable { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
     var isBusy by rememberSaveable { mutableStateOf(false) }
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -245,7 +243,7 @@ fun AuthScreen(
             )
             OutlinedTextField(
                 value = username,
-                onValueChange = { username = it.lowercase().filter { char -> char.isLetterOrDigit() || char == '_' } },
+                onValueChange = { username = it.lowercase().filter { char -> char in 'a'..'z' || char in '0'..'9' || char == '_' } },
                 modifier = Modifier.fillMaxWidth(),
                 singleLine = true,
                 label = { Text("Nome de usuário") },
@@ -313,11 +311,11 @@ fun AuthScreen(
             },
             enabled = !isBusy && serverUrl.isNotBlank() &&
                 password.isNotBlank() &&
-                if (isRegister) {
+                (if (isRegister) {
                     email.isNotBlank() && username.isNotBlank() && displayName.isNotBlank()
                 } else {
                     identifier.isNotBlank()
-                },
+                }),
             modifier = Modifier.fillMaxWidth().height(52.dp),
             shape = RoundedCornerShape(15.dp),
         ) {
