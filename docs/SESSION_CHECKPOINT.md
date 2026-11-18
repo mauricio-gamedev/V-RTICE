@@ -36,7 +36,7 @@
 ## Validation status
 
 - Source files were committed to the feature branch.
-- CI initially failed at Android SDK setup because the action attempted to install the obsolete `tools` package; the workflow now installs `platform-tools` explicitly.\n- After that correction, CI reached Gradle and exposed the AGP 9 built-in Kotlin migration; the legacy Kotlin Android plugin was removed.\n- The next CI run exposed Compose Runtime 1.12.1 requiring compileSdk 37; compileSdk and CI platform installation are being raised to API 37 while targetSdk remains 36.\n- A successful CI run has not yet been observed.
+- CI initially failed at Android SDK setup because the action attempted to install the obsolete `tools` package; the workflow now installs `platform-tools` explicitly.\n- After that correction, CI reached Gradle and exposed the AGP 9 built-in Kotlin migration; the legacy Kotlin Android plugin was removed.\n- Compose 1.12.1 required compileSdk 37, which is currently distributed as the Android 17 preview platform under a versioned package name rather than the stable `android-37` package. To keep foundation CI on a stable SDK, the Compose BOM is pinned to stable `2026.06.01` (Compose Runtime 1.11.4) and compileSdk/targetSdk remain 36.\n- A successful CI run for this updated dependency baseline has not yet been observed.
 - No local Android SDK/Gradle installation was available in the authoring environment.
 - Do not describe the Android build or backend test as passing until CI provides a successful run.
 - The Compose screen is a navigable foundation shell, not a connected production client.
