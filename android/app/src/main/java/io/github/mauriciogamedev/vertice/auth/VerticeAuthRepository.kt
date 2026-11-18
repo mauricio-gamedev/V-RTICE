@@ -81,19 +81,27 @@ class VerticeAuthRepository(context: Context) {
 
     suspend fun restoreSession(): AuthSession? {
         val storedToken = tokenStore.readRefreshToken() ?: return null
-        return runCatching { refresh(storedToken) }
-            .getOrElse {
+        return try {
+            refresh(storedToken)
+        } catch (failure: VerticeApiException) {
+            if (failure.statusCode == 401 || failure.statusCode == 403) {
                 tokenStore.clear()
-                null
             }
+            null
+        } catch (_: Exception) {
+            // Keep the encrypted token for a later retry when the network/server recovers.
+            null
+        }
     }
 
     suspend fun logout(session: AuthSession) {
         val accessToken = tokenStore.readRefreshToken()?.let { storedRefresh ->
             try {
                 refresh(storedRefresh).accessToken
-            } catch (failure: Exception) {
-                tokenStore.clear()
+            } catch (failure: VerticeApiException) {
+                if (failure.statusCode == 401 || failure.statusCode == 403) {
+                    tokenStore.clear()
+                }
                 throw failure
             }
         } ?: session.accessToken
@@ -129,6 +137,7 @@ class VerticeAuthRepository(context: Context) {
         val apiError = runCatching { body<ApiErrorDto>() }.getOrNull()
         return VerticeApiException(
             apiError?.message ?: "Falha na comunicação com o servidor (HTTP ${status.value}).",
+            statusCode = status.value,
         )
     }
 
