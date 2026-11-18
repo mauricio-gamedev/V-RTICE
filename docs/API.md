@@ -17,6 +17,7 @@ Request:
   "email": "person@example.com",
   "username": "person_01",
   "displayName": "Person",
+  "invitationCode": "<beta-invite-code>",
   "password": "at-least-10-characters"
 }
 ```
@@ -27,8 +28,9 @@ Rules:
 - Display name is 2–40 characters.
 - Password is 10–128 characters.
 - Email and username are unique.
+- A valid environment invitation code is required for beta registration.
 
-Success: `201 Created` with the auth response below. Duplicate email or username: `409 Conflict`.
+Success: `201 Created` with the auth response below. Duplicate email or username: `409 Conflict`. Missing or invalid invitation code: `403 Forbidden`.
 
 ## Login
 
@@ -107,4 +109,5 @@ Access tokens expire after 15 minutes. Refresh sessions expire after 30 days and
 - Only SHA-256 hashes of opaque refresh tokens are stored.
 - JWTs are signed with an environment-provided secret. The secret is never shipped to Android.
 - Session revocation is checked against PostgreSQL during authenticated requests.
-- Email verification, password reset, login rate limiting, account recovery, and abuse controls are not yet implemented. Do not expose public signup without adding those controls and HTTPS.
+- Beta registration requires the server-side `REGISTRATION_INVITE_CODE`; the code is compared in constant time and is never stored in the database or committed to the repository.
+- Email verification, password reset, login rate limiting, account recovery, and abuse controls are not yet implemented. This invite gate is only a temporary closed-testing control, not a replacement for production abuse protection.
